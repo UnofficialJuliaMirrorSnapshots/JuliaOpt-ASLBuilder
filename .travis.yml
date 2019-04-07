@@ -1,0 +1,40 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(name="BinaryProvider", url="https://github.com/JuliaPackaging/BinaryProvider.jl"))'
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(name="BinaryBuilder", url="https://github.com/JuliaPackaging/BinaryBuilder.jl")); Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+#deploy:
+#    provider: releases
+#    api_key:
+        # Note; this api_key is only valid for JuliaOpt/ASLBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+#        secure: KRTwvQoiPel9wRCisJuwVpgq0q1CZk9Sj0bng1VBUnj6mxTuKYXG5Kxdd8LRBh08A53V/tTSdAnZFIW7hUqnR3SWZKRbv3/UwvbDiuUEDsS/gVJEqQXmTJKyCW+blHPpjudSCBi2i8yYSwBBXg5k4RCm0rAKbbpcCi45vJeoq3yHKqdp3FrVMIdUuk3X8Jyeb8DPNzvAjfBp5amkioXhdtpZcRlOOz8hcLylQ35L3vgy/1PHajNiRIsqxFin4yremBQM8JKnLkW7I9l358hp1EgYB96bnRNeicHZDCFHm+SmsEwyolrpuijjh5N+4NYdxaXjDKBWiewXePxYQJcMsWqq3us1E39D37lXYclaYcY9XP3CtyuUIKswBSO4C6iNXyoQwnW5mbEHAyv8W0AMms1+wwBly64FCatM8x/42f/yk8IFY6uPkAHkHJTxDdWR9v47VngQUD4rqIS/nz6W8QAGbHA6d6wo5q+B8KyhJZ2Bbiin42TrYCR/ke6lagFBVv56VcAVKitGOLKHLt84Crm+fPdXnV+NARImX4EFmEcMrSRpNFfoxT6Kk0TrLcAAp4Bh8HGuQFJ4PLF64N6+3w62El/z/BGQv/Ln2xnbQLKb9FCS+B7oQLZ/kRkc0dKEGuYNIG9MvoveFdv3ufhVY37+ciVgzJL/wzev8sVNDxw=
+#    file_glob: true
+#    file: products/*
+#    skip_cleanup: true
+#    on:
+#        repo: JuliaOpt/ASLBuilder
+#        tags: true
